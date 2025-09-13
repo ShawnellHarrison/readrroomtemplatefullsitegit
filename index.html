@@ -1,0 +1,166 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- ✅ Runtime Supabase fallbacks (Bolt-friendly). Keep these updated. -->
+    <meta name="supabase-url" content="https://YOUR-PROJECT.supabase.co" />
+    <meta name="supabase-anon-key" content="eyYOURANONKEY" />
+
+    <!-- ✅ AdSense ownership + loader -->
+    <meta name="google-adsense-account" content="ca-pub-7547620682925490" />
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7547620682925490" crossorigin="anonymous"></script>
+
+    <!-- 🚨 IMPORTANT: Ensure this is the ONLY CSP meta tag on the page. If your host injects a CSP header, remove this meta and fix headers instead. -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self' data: blob:;
+      base-uri 'self';
+      frame-ancestors 'self';
+      script-src
+        'self' 'unsafe-inline' 'unsafe-eval'
+        https://pagead2.googlesyndication.com
+        https://securepubads.g.doubleclick.net
+        https://www.googletagmanager.com
+        https://www.google-analytics.com
+        https://fundingchoicesmessages.google.com
+        https://www.gstatic.com;
+      connect-src
+        'self'
+        https://*.supabase.co https://*.supabase.in
+        https://api.themoviedb.org https://image.tmdb.org
+        https://www.googleapis.com
+        https://api.rawg.io
+        https://images.unsplash.com
+        https://www.google-analytics.com https://www.googletagmanager.com https://www.gstatic.com
+        https://pagead2.googlesyndication.com
+        https://securepubads.g.doubleclick.net
+        https://googleads.g.doubleclick.net
+        https://adservice.google.com https://adservice.google.co.*
+        https://tpc.googlesyndication.com
+        https://stats.g.doubleclick.net
+        https://ep1.adtrafficquality.google;
+      img-src
+        'self' data: blob:
+        https://image.tmdb.org
+        https://books.google.com
+        https://media.rawg.io
+        https://i.scdn.co
+        https://images.unsplash.com
+        https://via.placeholder.com
+        https://pagead2.googlesyndication.com
+        https://tpc.googlesyndication.com
+        https://googleads.g.doubleclick.net
+        https://www.google-analytics.com
+        https://www.googletagmanager.com;
+      style-src
+        'self' 'unsafe-inline';
+      font-src
+        'self' data:;
+      frame-src
+        https://googleads.g.doubleclick.net
+        https://tpc.googlesyndication.com
+        https://fundingchoicesmessages.google.com;
+      worker-src 'self' blob:;
+      media-src 'self' blob:;
+      manifest-src 'self';
+    " />
+
+    <!-- SEO -->
+    <meta name="description" content="READ THE ROOM - Real-time consensus voting app for groups, teams, and communities. Epic battles for movies, books, games, music, and food. Make decisions together with anonymous voting and instant results." />
+    <meta name="keywords" content="group voting app, consensus, real-time, decision making, team tool, anonymous voting, movie battles, book battles, music battles, food battles, game battles, trending battles" />
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="READ THE ROOM - Free Group Voting & Decision Making" />
+    <meta property="og:description" content="Epic battles for movies, books, games, music, and food. Real-time consensus voting for groups, teams, and communities." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://read-the-room.social" />
+    <meta property="og:site_name" content="Read The Room" />
+    
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@readtheroomsocial" />
+    <meta name="twitter:creator" content="@readtheroomsocial" />
+    <meta name="twitter:title" content="READ THE ROOM - Free Group Voting & Decision Making" />
+    <meta name="twitter:description" content="Epic battles for movies, books, games, music, and food. Real-time consensus voting for groups, teams, and communities." />
+    
+    <!-- Content Categorization for AdSense -->
+    <meta name="content-category" content="entertainment" />
+    <meta name="content-subcategory" content="music,movies,food,books,voting,social,games" />
+    <meta name="audience" content="general" />
+    <meta name="content-rating" content="general" />
+    
+    <!-- Google AdSense Optimization -->
+    <meta name="google-adsense-platform-account" content="ca-host-pub-7547620682925490" />
+    <meta name="google-adsense-platform-domain" content="read-the-room.social" />
+    
+    <!-- Mobile capability -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <!-- Theme and Icons -->
+    <meta name="theme-color" content="#007cba" />
+    <meta name="msapplication-TileColor" content="#007cba" />
+    
+    <!-- Accessibility -->
+    <meta name="color-scheme" content="light dark" />
+    <meta name="supported-color-schemes" content="light dark" />
+    
+    <!-- Favicon -->
+    <link rel="icon" href="/favicon.ico" />
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T3KCGPHM0Z"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-T3KCGPHM0Z');
+    </script>
+    
+    <!-- Google AdSense -->
+    <meta name="google-adsense-account" content="ca-pub-7547620682925490">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7547620682925490"
+         crossorigin="anonymous"></script>
+    
+    <!-- Supabase configuration meta tags (fallback) -->
+    
+    <title>READ THE ROOM - Free Group Voting & Decision Making</title>
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Read The Room",
+      "description": "Free group voting and decision making app with epic battles for movies, books, games, music, and food",
+      "url": "https://read-the-room.social",
+      "applicationCategory": "SocialNetworkingApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Real-time group voting",
+        "Movie battle arena",
+        "Book battle arena", 
+        "Game battle arena",
+        "Music battle royale",
+        "Food wars arena",
+        "Anonymous voting",
+        "Live results",
+        "Social sharing"
+      ]
+    }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

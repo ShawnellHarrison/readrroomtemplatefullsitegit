@@ -1,0 +1,1 @@
+export type VotingType = 'yes-no' | 'multiple-choice' | 'scale' | 'ranked-choice' | 'movie_battle' | 'game_battle' | 'book_battle' | 'music_battle' | 'food_battle';
