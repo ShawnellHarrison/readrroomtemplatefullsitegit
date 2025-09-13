@@ -63,17 +63,17 @@ export async function getSupabase() {
   return client;
 }
 
-// Initialize client
-let supabaseInstance: ReturnType<typeof createClient> | null = null;
+// Export a promise that resolves to the initialized client
+export const supabasePromise = getSupabase();
 
-export const initializeSupabase = async () => {
-  if (!supabaseInstance) {
-    supabaseInstance = await getSupabase();
-  }
-  return supabaseInstance;
-};
+// For backwards compatibility, export a synchronous client getter
+// This will throw if called before initialization
+export let supabase: ReturnType<typeof createClient>;
 
-export const supabase = await initializeSupabase();
+// Initialize the synchronous export
+getSupabase().then(client => {
+  supabase = client;
+});
 
 export const getSessionId = (): string => {
   const KEY = 'readtheroom-session-id';

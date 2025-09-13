@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { User, Session, AuthError } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { getSupabase } from '../lib/supabase';
 import { trackEvent } from '../utils/analytics';
 
 interface UserProfile {
@@ -48,9 +48,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const [supabase, setSupabase] = useState<any>(null);
+
+  // Initialize Supabase client
+  useEffect(() => {
+    getSupabase().then(client => {
+      setSupabase(client);
+    });
+  }, []);
 
   // Fetch user profile
   const fetchProfile = async (userId: string): Promise<UserProfile | null> => {
+    if (!supabase) return null;
+    
     try {
       const { data, error } = await supabase
         .from('user_profiles')
@@ -72,6 +82,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Initialize auth state
   useEffect(() => {
+    if (!supabase) return;
+    
     // Get initial session
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
@@ -115,9 +127,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     );
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [supabase]);
 
   const signUp = async (email: string, password: string, username?: string) => {
+    if (!supabase) {
+      return { error: new Error('Supabase client not initialized') as AuthError };
+    }
+    
     try {
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -144,6 +160,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signIn = async (email: string, password: string) => {
+    if (!supabase) {
+      return { error: new Error('Supabase client not initialized') as AuthError };
+    }
+    
     try {
       const { error } = await supabase.auth.signInWithPassword({
         email,
@@ -157,6 +177,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const signOut = async () => {
+    if (!supabase) {
+      return { error: new Error('Supabase client not initialized') as AuthError };
+    }
+    
     try {
       const { error } = await supabase.auth.signOut();
       return { error };
@@ -166,7 +190,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const updateProfile = async (updates: Partial<UserProfile>) => {
-    if (!user) {
+    if (!user || !supabase) {
       return { error: new Error('No user logged in') };
     }
 
@@ -196,7 +220,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const refreshProfile = async () => {
-    if (!user) return;
+    if (!user || !supabase) return;
     
     const userProfile = await fetchProfile(user.id);
     setProfile(userProfile);
