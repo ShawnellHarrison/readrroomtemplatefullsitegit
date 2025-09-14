@@ -104,6 +104,22 @@ export const BattleViewer: React.FC<BattleViewerProps> = ({ battleId, battleType
         setBattle(null);
       }
     };
+
+    loadBattle();
+  }, [battleId]);
+
+  useEffect(() => {
+    if (!battle?.endsAt) return;
+
+    const updateTimer = () => {
+      const now = new Date();
+      const diff = battle.endsAt.getTime() - now.getTime();
+      
+      if (diff > 0) {
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        
+        if (hours > 0) {
           setTimeLeft(`${hours}h ${minutes}m`);
         } else {
           setTimeLeft(`${minutes}m`);
