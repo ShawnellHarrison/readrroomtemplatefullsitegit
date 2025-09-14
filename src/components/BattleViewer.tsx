@@ -26,84 +26,84 @@ export const BattleViewer: React.FC<BattleViewerProps> = ({ battleId, battleType
     const loadBattle = async () => {
       try {
         const supabase = await getSupabase();
-        
-        // Get battle data
+
+        // 1) Get battle (can be 0 rows) → maybeSingle()
         const { data: battleData, error: battleError } = await supabase
           .from('battles')
           .select('*')
           .eq('id', battleId)
-          .single();
+          .maybeSingle();
 
-        if (battleError || !battleData) {
-          console.error('Battle not found:', battleError);
+        if (battleError) {
+          console.error('Battle fetch error:', battleError);
+          setBattle(null);
+          return;
+        }
+        if (!battleData) {
+          console.warn('Battle not found');
+          setBattle(null);
           return;
         }
 
-        // Get vote counts
+        // 2) Get ALL votes as a list (never .single())
         const { data: votes, error: votesError } = await supabase
           .from('battle_votes')
           .select('item_choice')
           .eq('battle_id', battleId);
 
-        if (!votesError && votes) {
-          const counts = votes.reduce((acc, vote) => {
-            acc[vote.item_choice] = (acc[vote.item_choice] || 0) + 1;
+        if (votesError) {
+          console.error('Votes fetch error:', votesError);
+        }
+
+        // ✅ 3) Define counts OUTSIDE the if-block so it's in scope
+        const counts: { A: number; B: number } = (votes ?? []).reduce(
+          (acc: { A: number; B: number }, row: { item_choice?: 'A' | 'B' }) => {
+            if (row?.item_choice === 'A') acc.A += 1;
+            else if (row?.item_choice === 'B') acc.B += 1;
             return acc;
-          }, { A: 0, B: 0 });
-          setVoteCounts(counts);
-        }
+          },
+          { A: 0, B: 0 }
+        );
+        setVoteCounts(counts);
 
-        // Check if user has voted
+        // 4) Has THIS session voted? (can be 0 rows) → limit(1).maybeSingle()
         const sessionId = getSessionId();
-        const { data: userVoteData } = await supabase
-          .from('battle_votes')
-          .select('item_choice')
-          .eq('battle_id', battleId)
-          .eq('session_id', sessionId)
-          .single();
+        if (sessionId) {
+          const { data: userVoteData, error: userVoteErr } = await supabase
+            .from('battle_votes')
+            .select('item_choice')
+            .eq('battle_id', battleId)
+            .eq('session_id', sessionId)
+            .limit(1)
+            .maybeSingle(); // ← fixes 406
 
-        if (userVoteData) {
-          setUserVote(userVoteData.item_choice);
+          if (userVoteErr) console.error('User vote fetch error:', userVoteErr);
+          setUserVote((userVoteData?.item_choice as 'A' | 'B') ?? null);
+        } else {
+          setUserVote(null);
         }
 
-        // Format battle data
+        // 5) Normalize items (handles jsonb or text columns)
+        const toObj = (raw: any) =>
+          raw && typeof raw === 'object'
+            ? raw
+            : { title: String(raw ?? 'Unknown'), name: String(raw ?? 'Unknown') };
+
         const formattedBattle = {
           ...battleData,
-          itemA: { ...battleData.item_a, votes: counts.A },
-          itemB: { ...battleData.item_b, votes: counts.B },
+          itemA: { ...toObj(battleData.item_a), votes: counts.A },
+          itemB: { ...toObj(battleData.item_b), votes: counts.B },
           totalVotes: counts.A + counts.B,
-          createdAt: new Date(battleData.created_at),
-          endsAt: battleData.ends_at ? new Date(battleData.ends_at) : null
+          createdAt: battleData.created_at ? new Date(battleData.created_at) : null,
+          endsAt: battleData.ends_at ? new Date(battleData.ends_at) : null,
         };
 
         setBattle(formattedBattle);
       } catch (error) {
         console.error('Error loading battle:', error);
+        setBattle(null);
       }
     };
-
-    loadBattle();
-    const interval = setInterval(loadBattle, 10000); // Refresh every 10 seconds
-    return () => clearInterval(interval);
-  }, [battleId]);
-
-  // Countdown timer
-  useEffect(() => {
-    if (!battle?.endsAt) return;
-
-    const updateTimer = () => {
-      const now = new Date().getTime();
-      const end = new Date(battle.endsAt).getTime();
-      const difference = end - now;
-
-      if (difference > 0) {
-        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-        
-        if (days > 0) {
-          setTimeLeft(`${days}d ${hours}h`);
-        } else if (hours > 0) {
           setTimeLeft(`${hours}h ${minutes}m`);
         } else {
           setTimeLeft(`${minutes}m`);
