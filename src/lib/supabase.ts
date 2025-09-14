@@ -84,6 +84,3 @@ export const getSessionId = (): string => {
   }
   return id;
 };
-
-// Add import for BattleViewer
-export { getSupabase } from './supabase';
