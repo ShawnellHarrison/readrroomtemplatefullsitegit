@@ -6,6 +6,7 @@ import { GlassCard } from './UI/GlassCard';
 import { NeonButton } from './UI/NeonButton';
 import { SwipeVoting } from './SwipeVoting';
 import { useBattles } from '../hooks/useBattles';
+import { getSupabase, getSessionId } from '../lib/supabase';
 
 interface BattleViewerProps {
   battleId: string;
@@ -18,18 +19,73 @@ export const BattleViewer: React.FC<BattleViewerProps> = ({ battleId, battleType
   const [battle, setBattle] = useState<any>(null);
   const [userVote, setUserVote] = useState<any>(null);
   const [timeLeft, setTimeLeft] = useState('');
+  const [voteCounts, setVoteCounts] = useState({ A: 0, B: 0 });
   const confettiTriggered = useRef(false);
 
   useEffect(() => {
-    const loadBattle = () => {
-      const battleData = getBattle(battleId);
-      setBattle(battleData);
+    const loadBattle = async () => {
+      try {
+        const supabase = await getSupabase();
+        
+        // Get battle data
+        const { data: battleData, error: battleError } = await supabase
+          .from('battles')
+          .select('*')
+          .eq('id', battleId)
+          .single();
+
+        if (battleError || !battleData) {
+          console.error('Battle not found:', battleError);
+          return;
+        }
+
+        // Get vote counts
+        const { data: votes, error: votesError } = await supabase
+          .from('battle_votes')
+          .select('item_choice')
+          .eq('battle_id', battleId);
+
+        if (!votesError && votes) {
+          const counts = votes.reduce((acc, vote) => {
+            acc[vote.item_choice] = (acc[vote.item_choice] || 0) + 1;
+            return acc;
+          }, { A: 0, B: 0 });
+          setVoteCounts(counts);
+        }
+
+        // Check if user has voted
+        const sessionId = getSessionId();
+        const { data: userVoteData } = await supabase
+          .from('battle_votes')
+          .select('item_choice')
+          .eq('battle_id', battleId)
+          .eq('session_id', sessionId)
+          .single();
+
+        if (userVoteData) {
+          setUserVote(userVoteData.item_choice);
+        }
+
+        // Format battle data
+        const formattedBattle = {
+          ...battleData,
+          itemA: { ...battleData.item_a, votes: counts.A },
+          itemB: { ...battleData.item_b, votes: counts.B },
+          totalVotes: counts.A + counts.B,
+          createdAt: new Date(battleData.created_at),
+          endsAt: battleData.ends_at ? new Date(battleData.ends_at) : null
+        };
+
+        setBattle(formattedBattle);
+      } catch (error) {
+        console.error('Error loading battle:', error);
+      }
     };
 
     loadBattle();
-    const interval = setInterval(loadBattle, 5000); // Refresh every 5 seconds
+    const interval = setInterval(loadBattle, 10000); // Refresh every 10 seconds
     return () => clearInterval(interval);
-  }, [battleId, getBattle]);
+  }, [battleId]);
 
   // Countdown timer
   useEffect(() => {

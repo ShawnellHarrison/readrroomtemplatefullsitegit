@@ -60,7 +60,8 @@ export const SwipeVoting: React.FC<SwipeVotingProps> = ({
   }, [disabled, battle, x]);
 
   const handleVote = (itemId: any, direction: 'left' | 'right') => {
-    onVote(itemId);
+    const choice = direction === 'left' ? 'A' : 'B';
+    onVote(choice);
     setShowFeedback(direction);
     setTimeout(() => setShowFeedback(null), 2000);
     x.set(0);
@@ -68,8 +69,9 @@ export const SwipeVoting: React.FC<SwipeVotingProps> = ({
 
   const handleDirectVote = (itemId: any) => {
     if (disabled) return;
-    const direction = itemId === (battle.itemA.id || battle.itemA.tmdb_id) ? 'left' : 'right';
-    handleVote(itemId, direction);
+    const choice = itemId === 'A' ? 'A' : 'B';
+    const direction = choice === 'A' ? 'left' : 'right';
+    handleVote(choice, direction);
   };
 
   const getVotePercentage = (votes: number) => {
@@ -152,10 +154,10 @@ export const SwipeVoting: React.FC<SwipeVotingProps> = ({
             {/* Item A */}
             <motion.div
               whileHover={{ scale: 1.02 }}
-              onClick={() => handleDirectVote(battle.itemA.id || battle.itemA.tmdb_id)}
+              onClick={() => handleDirectVote('A')}
               className={`
                 relative cursor-pointer rounded-xl overflow-hidden group
-                ${userVote === (battle.itemA.id || battle.itemA.tmdb_id) ? 'ring-2 ring-red-400 shadow-[0_0_20px_rgba(239,68,68,0.5)]' : ''}
+                ${userVote === 'A' ? 'ring-2 ring-red-400 shadow-[0_0_20px_rgba(239,68,68,0.5)]' : ''}
               `}
             >
               <img
@@ -182,7 +184,7 @@ export const SwipeVoting: React.FC<SwipeVotingProps> = ({
                 </div>
               </div>
 
-              {userVote === (battle.itemA.id || battle.itemA.tmdb_id) && (
+              {userVote === 'A' && (
                 <div className="absolute top-4 right-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                   Your Pick!
                 </div>
@@ -199,10 +201,10 @@ export const SwipeVoting: React.FC<SwipeVotingProps> = ({
             {/* Item B */}
             <motion.div
               whileHover={{ scale: 1.02 }}
-              onClick={() => handleDirectVote(battle.itemB.id || battle.itemB.tmdb_id)}
+              onClick={() => handleDirectVote('B')}
               className={`
                 relative cursor-pointer rounded-xl overflow-hidden group
-                ${userVote === (battle.itemB.id || battle.itemB.tmdb_id) ? 'ring-2 ring-green-400 shadow-[0_0_20px_rgba(34,197,94,0.5)]' : ''}
+                ${userVote === 'B' ? 'ring-2 ring-green-400 shadow-[0_0_20px_rgba(34,197,94,0.5)]' : ''}
               `}
             >
               <img
@@ -229,7 +231,7 @@ export const SwipeVoting: React.FC<SwipeVotingProps> = ({
                 </div>
               </div>
 
-              {userVote === (battle.itemB.id || battle.itemB.tmdb_id) && (
+              {userVote === 'B' && (
                 <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
                   Your Pick!
                 </div>

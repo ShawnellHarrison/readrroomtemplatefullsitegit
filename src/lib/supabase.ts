@@ -79,8 +79,11 @@ export const getSessionId = (): string => {
   const KEY = 'readtheroom-session-id';
   let id = localStorage.getItem(KEY);
   if (!id) {
-    id = crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2);
+    id = crypto?.randomUUID?.() ?? `session_${Math.random().toString(36).slice(2)}_${Date.now()}`;
     localStorage.setItem(KEY, id);
   }
   return id;
 };
+
+// Add import for BattleViewer
+export { getSupabase } from './supabase';
