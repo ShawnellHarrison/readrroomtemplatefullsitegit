@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { AuthProvider } from './contexts/AuthContext';
+import { AuthPNA/AA & Recovery Groups: Without “advertising,” you can let group leaders know you’re open to cash-pay and Medicaid patients.
+
+Churches & Faith Leaders: Kentucky churches are often frontline helpers for families. Provide flyers with your intake phone number.
+
+Drug Court & Probation Offices: Judges and probation officers need reliable MAT partners for clients.
+
+Local shelters / food pantries: Many clients overlap with homelessness or housing insecurity services.rovider } from './contexts/AuthContext';
 import { LandingPage } from './components/LandingPage';
 import { Dashboard } from './components/Dashboard';
 import { BattleArena } from './components/BattleArena';
