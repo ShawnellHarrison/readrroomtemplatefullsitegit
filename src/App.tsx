@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { AuthPNA/AA & Recovery Groups: Without “advertising,” you can let group leaders know you’re open to cash-pay and Medicaid patients.
+import { AuthProvider } from './contexts/AuthContext';
 
 Churches & Faith Leaders: Kentucky churches are often frontline helpers for families. Provide flyers with your intake phone number.
 
