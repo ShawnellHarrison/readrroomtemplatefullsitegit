@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { getSupabase, getSessionId } from '../lib/supabase';
+import { trackEvent } from '../utils/analytics';
 
 export interface Battle {
   id: string;
@@ -27,10 +28,12 @@ export const useBattles = (battleType: string) => {
     
     try {
       const supabase = await getSupabase();
+      
+      // Use vote_rooms table with movie_battle type instead of battles table
       const { data, error: fetchError } = await supabase
-        .from('battles')
+        .from('vote_rooms')
         .select('*')
-        .eq('battle_type', battleType)
+        .eq('type', 'movie_battle')
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
@@ -38,19 +41,19 @@ export const useBattles = (battleType: string) => {
         throw fetchError;
       }
 
-      const formattedBattles = (data || []).map(battle => ({
-        id: battle.id,
-        title: battle.title,
-        description: battle.description,
-        battle_type: battle.battle_type,
-        item_a: battle.item_a,
-        item_b: battle.item_b,
-        totalVotes: battle.total_votes || 0,
-        createdAt: new Date(battle.created_at),
-        endsAt: battle.ends_at ? new Date(battle.ends_at) : new Date(Date.now() + 24 * 60 * 60 * 1000),
-        isActive: battle.is_active,
-        timeLeft: getTimeLeft(battle.ends_at),
-        isEnded: battle.ends_at ? new Date(battle.ends_at) < new Date() : false
+      const formattedBattles = (data || []).map(room => ({
+        id: room.id,
+        title: room.title,
+        description: room.description,
+        battle_type: 'movie',
+        item_a: room.items?.[0] || { title: 'Movie A', name: 'Movie A' },
+        item_b: room.items?.[1] || { title: 'Movie B', name: 'Movie B' },
+        totalVotes: room.total_votes || 0,
+        createdAt: new Date(room.created_at),
+        endsAt: room.deadline ? new Date(room.deadline) : new Date(Date.now() + 24 * 60 * 60 * 1000),
+        isActive: room.is_active,
+        timeLeft: getTimeLeft(room.deadline),
+        isEnded: room.deadline ? new Date(room.deadline) < new Date() : false
       }));
 
       setBattles(formattedBattles);
@@ -74,14 +77,13 @@ export const useBattles = (battleType: string) => {
       endsAt.setHours(endsAt.getHours() + (battleData.duration || 24));
 
       const { data, error } = await supabase
-        .from('battles')
+        .from('vote_rooms')
         .insert({
           title: battleData.title,
           description: battleData.description,
-          battle_type: battleType,
-          item_a: battleData.itemA,
-          item_b: battleData.itemB,
-          ends_at: endsAt.toISOString(),
+          type: 'movie_battle',
+          items: [battleData.itemA, battleData.itemB],
+          deadline: endsAt.toISOString(),
           is_active: true
         })
         .select()
@@ -91,7 +93,7 @@ export const useBattles = (battleType: string) => {
         throw error;
       }
 
-      // Refresh battles list
+      trackEvent('battle_created', { type: battleType, id: data.id });
       await loadBattles();
       
       return data.id;
@@ -110,24 +112,31 @@ export const useBattles = (battleType: string) => {
       const supabase = await getSupabase();
       const sessionId = getSessionId();
 
+      // Get the battle to find the movie IDs
+      const battle = getBattle(battleId);
+      if (!battle) {
+        console.error('Battle not found');
+        return false;
+      }
+
+      const movieId = itemChoice === 'A' ? battle.item_a.id : battle.item_b.id;
+
       const { error } = await supabase
-        .from('battle_votes')
-        .insert({
-          battle_id: battleId,
-          item_choice: itemChoice,
-          session_id: sessionId
+        .from('votes')
+        .upsert({
+          room_id: battleId,
+          session_id: sessionId,
+          value: { movieId, choice: itemChoice }
+        }, { 
+          onConflict: 'room_id,session_id' 
         });
 
       if (error) {
-        // If it's a duplicate vote error, that's expected
-        if (error.code === '23505') {
-          console.log('User has already voted in this battle');
-          return false;
-        }
-        throw error;
+        console.error('Vote error:', error);
+        return false;
       }
 
-      // Refresh battles to get updated vote counts
+      trackEvent('vote_cast', { battleId, choice: itemChoice });
       await loadBattles();
       
       return true;
