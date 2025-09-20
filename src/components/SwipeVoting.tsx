@@ -5,7 +5,7 @@ import { Heart, X, Star, Calendar, Users, Zap } from 'lucide-react';
 import { GlassCard } from './UI/GlassCard';
 import { getPosterUrl, getReleaseYear } from '../lib/tmdb';
 import { getBookCoverUrl, getPublicationYear } from '../lib/googleBooks';
-import { getGameCoverUrl } from '../lib/rawg';
+import { getGameCoverUrl, getReleaseYear as getGameReleaseYear } from '../lib/igdb';
 import { getArtistImage, getAlbumImage } from '../lib/spotify';
 
 interface SwipeVotingProps {
@@ -104,7 +104,7 @@ export const SwipeVoting: React.FC<SwipeVotingProps> = ({
       case 'book':
         return `by ${item.authors?.join(', ') || 'Unknown'}`;
       case 'game':
-        return getReleaseYear(item.released);
+        return getGameReleaseYear(item.first_release_date);
       case 'music':
         return item.artists ? `by ${item.artists[0]?.name}` : 'Artist';
       case 'food':

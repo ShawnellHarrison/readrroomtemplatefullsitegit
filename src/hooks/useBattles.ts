@@ -33,7 +33,7 @@ export const useBattles = (battleType: string) => {
       const { data, error: fetchError } = await supabase
         .from('vote_rooms')
         .select('*')
-        .eq('type', 'movie_battle')
+        .eq('type', `${battleType}_battle`)
         .eq('is_active', true)
         .order('created_at', { ascending: false });
 
@@ -81,7 +81,7 @@ export const useBattles = (battleType: string) => {
         .insert({
           title: battleData.title,
           description: battleData.description,
-          type: 'movie_battle',
+          type: `${battleType}_battle`,
           items: [battleData.itemA, battleData.itemB],
           deadline: endsAt.toISOString(),
           is_active: true

@@ -4,7 +4,7 @@ import { Search, Star, Calendar, Loader } from 'lucide-react';
 import { GlassCard } from './UI/GlassCard';
 import { searchMovies, getPosterUrl, getReleaseYear } from '../lib/tmdb';
 import { searchBooks, getBookCoverUrl, getPublicationYear } from '../lib/googleBooks';
-import { searchGames, getGameCoverUrl } from '../lib/rawg';
+import { searchGames, getGameCoverUrl, getReleaseYear as getGameReleaseYear } from '../lib/igdb';
 import { sampleTracks, sampleArtists, getArtistImage, getAlbumImage } from '../lib/spotify';
 import { sampleFoods } from '../lib/foodData';
 
@@ -114,7 +114,7 @@ export const ItemSearch: React.FC<ItemSearchProps> = ({
       case 'book':
         return `by ${item.authors?.join(', ') || 'Unknown'}`;
       case 'game':
-        return getReleaseYear(item.released);
+        return getGameReleaseYear(item.first_release_date);
       case 'music':
         return item.artists ? `by ${item.artists[0]?.name}` : `${item.followers?.total?.toLocaleString()} followers`;
       case 'food':

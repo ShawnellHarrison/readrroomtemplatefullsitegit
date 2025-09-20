@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Search, Clock, Sparkles } from 'lucide-react';
 import { GlassCard } from './UI/GlassCard';
 import { NeonButton } from './UI/NeonButton';
-import { MovieSearch } from './MovieSearch';
+import { ItemSearch } from './ItemSearch';
 
 interface CreateBattleModalProps {
   isOpen: boolean;
@@ -99,10 +99,11 @@ export const CreateBattleModal: React.FC<CreateBattleModalProps> = ({
                   <h3 className="text-xl font-bold text-white">Choose Your Fighters</h3>
                   
                   <div>
-                    <MovieSearch
-                      onSelectMovie={setItemA}
+                    <ItemSearch
+                      battleType={battleType}
+                      onSelectItem={setItemA}
                       selectedItem={itemA}
-                      placeholder="Search for first movie..."
+                      placeholder={`Search for first ${battleType}...`}
                       excludeItemId={itemB?.id}
                       label="Fighter A (Red Corner)"
                     />
@@ -115,10 +116,11 @@ export const CreateBattleModal: React.FC<CreateBattleModalProps> = ({
                   </div>
 
                   <div>
-                    <MovieSearch
-                      onSelectMovie={setItemB}
+                    <ItemSearch
+                      battleType={battleType}
+                      onSelectItem={setItemB}
                       selectedItem={itemB}
-                      placeholder="Search for second movie..."
+                      placeholder={`Search for second ${battleType}...`}
                       excludeItemId={itemA?.id}
                       label="Fighter B (Green Corner)"
                     />
