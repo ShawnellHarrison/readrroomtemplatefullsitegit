@@ -12,6 +12,7 @@ import { trackPageView, trackEvent } from '../utils/analytics';
 
 interface LandingPageProps {
   onGetStarted: () => void;
+  onCreateVote: () => void;
   onMovieBattles: () => void;
   onBookBattles: () => void;
   onGameBattles: () => void;
@@ -22,6 +23,7 @@ interface LandingPageProps {
 
 export const LandingPage: React.FC<LandingPageProps> = ({ 
   onGetStarted, 
+  onCreateVote,
   onMovieBattles, 
   onBookBattles, 
   onGameBattles, 
@@ -209,15 +211,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({
           className="flex flex-col md:flex-row gap-6 justify-center mb-12"
         >
           <NeonButton 
-            onClick={() => {
-              trackEvent('get_started_clicked', { source: 'landing_page' });
-              onGetStarted();
-            }} 
+            onClick={onCreateVote}
             size="lg" 
             className="text-xl"
           >
             <Vote className="w-6 h-6 mr-3" />
             CREATE A VOTE
+          </NeonButton>
+          <NeonButton 
+            onClick={() => {
+              trackEvent('get_started_clicked', { source: 'landing_page' });
+              onGetStarted();
+            }} 
+            size="lg" 
+            variant="secondary"
+            className="text-xl"
+          >
+            <Users className="w-6 h-6 mr-3" />
+            BATTLE ARENA
           </NeonButton>
         </motion.div>
 

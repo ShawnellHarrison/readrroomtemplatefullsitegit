@@ -12,6 +12,14 @@ interface DashboardProps {
 export const Dashboard: React.FC<DashboardProps> = ({ onBack, onNavigate }) => {
   const battleTypes = [
     {
+      id: 'vote-creator',
+      title: 'Custom Vote Creator',
+      description: 'Create custom voting sessions for any topic',
+      icon: Vote,
+      color: 'from-green-500 to-blue-600',
+      bgColor: 'from-green-900 via-blue-900 to-indigo-900'
+    },
+    {
       id: 'movie-battles',
       title: 'Movie Battle Arena',
       description: 'Epic movie showdowns decided by the crowd',
